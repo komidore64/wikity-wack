@@ -1,5 +1,9 @@
 # Wikity-Wack
 
+![GitHub](https://img.shields.io/github/license/komidore64/wikity-wack)
+![GitHub repo size](https://img.shields.io/github/repo-size/komidore64/wikity-wack)
+![Vundle Compatible](https://img.shields.io/badge/Vundle.vim-compatible-yellow)
+
 Make MediaWiki edits in VIM!
 
 ## Requirements
