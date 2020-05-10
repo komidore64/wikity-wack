@@ -21,7 +21,7 @@ Open the given article into the current buffer for editing
 
 ## Installation
 
-**Wikity-Wack** is Pathogen/Vundle compatible so just add the following to your plugin list:
+**Wikity-Wack** is Vundle-compatible so just add the following to your plugin list:
 
 ```vim
 Plugin 'komidore64/wikity-wack'
@@ -47,11 +47,12 @@ You can put `password` in there if you want, but if you don't
 - publish the current buffer contents to a mediawiki page
 - diff the current buffer contents with a mediawiki page
 - open the current buffer contents in a preview window
+- Vim documentation / help
 
 ### nice-to-have
 
 - store configurations for multiple mediawiki sites
-- anonymous editing
+- anonymous editing from sites that allow it
 
 ## Friends
 
