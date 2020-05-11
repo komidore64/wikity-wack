@@ -48,13 +48,21 @@ class Shim():
         client = Client(**self.opts)
         article = client.fetch_page(article_name)
         vim.current.buffer[:] = article.text().split("\n")
-        vim.command('set ft=mediawiki')
         vim.current.buffer.vars['article_name'] = self._squote_escape(article_name).encode()
 
+        vim.command(f"redraw | echo \"Opening [ {article_name} ]\"")
+
     def article_publish(self):
+        try:
+            article_name = vim.current.buffer.vars['article_name'].decode()
+        except KeyError:
+            vim.eval('throw noRemoteWiki')
+            return # not sure if we ever get here?
+
         client = Client(**self.opts)
-        article_name = vim.current.buffer.vars['article_name'].decode()
         text = "\n".join(vim.current.buffer[:])
         summary = self._prompt('Summary? : ', err_on_blank=False)
         minor_change = self._prompt('Minor change? [y/N] : ', err_on_blank=False, default='n').lower() == 'y'
         client.publish_page(article_name, text, summary, minor=minor_change)
+
+        vim.command(f"redraw | echo \"Successfully published [ {article_name} ]\"")

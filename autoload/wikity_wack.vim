@@ -10,7 +10,7 @@ endfunction
 
 function! wikity_wack#Init()
     if !has('python3')
-        echo 'Error: Wikity-Wack requires Vim to be compiled with python3 support.'
+        echoerr 'Wikity-Wack requires Vim to be compiled with Python3.'
         finish
     endif
 
@@ -25,10 +25,15 @@ function! wikity_wack#Open(article_name)
     python3 Shim().article_open()
     call wikity_wack#ResetUndo()
     set nomodified
+    set filetype=mediawiki
 endfunction
 
 function! wikity_wack#Publish()
-    call wikity_wack#Init()
-    python3 Shim().article_publish()
-    set nomodified
+    try
+        call wikity_wack#Init()
+        python3 Shim().article_publish()
+        set nomodified
+    catch /noRemoteWiki
+        echoerr 'This buffer doesn''t have a remote wiki page.'
+    endtry
 endfunction
