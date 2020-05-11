@@ -1,6 +1,9 @@
 import mwclient
 
 class Client():
+    """
+    Pure python for interacting with mwclient
+    """
 
     def __init__(self, host, username, password, **kwargs):
         conn_args = dict(host=host)

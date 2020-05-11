@@ -14,13 +14,17 @@ Make MediaWiki edits in VIM!
 
 ## Usage
 
-### **:WWedit [article-name]**
+### **:WWOpen [article-name]**
 
 Open the given article into the current buffer for editing
 
 ```vim
-:WWedit EXVSMBON/Gundam
+:WWOpen EXVSMBON/Gundam
 ```
+
+### **:WWPublish**
+
+Publish the contents of the current buffer to the same article name you opened.
 
 
 ## Installation
@@ -48,7 +52,7 @@ You can put `password` in there if you want, but if you don't
 ### Main Functionality
 
 - ~~fetch an article by name and populate it into the current buffer~~
-- publish the current buffer contents to a mediawiki page
+- ~~publish the current buffer contents to a mediawiki page~~
 - diff the current buffer contents with a mediawiki page
 - open the current buffer contents in a preview window
 - Vim documentation / help

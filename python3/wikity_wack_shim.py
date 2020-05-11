@@ -6,11 +6,11 @@ class Shim():
     Shim is an adapter class for interfacing Wikity-Wack's python with Vim.
     """
 
-    def _get_opt(self, opt_key, prompt=None, ask=True):
+    def _get_opt(self, opt_key, prompt_text=None, ask=True):
        opt = vim.vars['wikity_wack'].get(opt_key, None)
 
        if not opt and ask:
-           opt = self._prompt(prompt or f"{opt_key}? : ", opt_key == 'password')
+           opt = self._prompt(prompt_text or f"{opt_key}? : ", opt_key == 'password')
            vim.vars['wikity_wack'][opt_key] = opt.encode()
 
        if type(opt) is bytes:
@@ -22,8 +22,10 @@ class Shim():
             vim.eval('inputsave()')
             cmd = 'inputsecret' if is_password else 'input'
             ret = vim.eval(f"{cmd}('{self._squote_escape(prompt_msg)}', '{default}')").strip()
+            vim.eval('inputrestore()')
             if err_on_blank and not len(ret):
-                raise Exception('Prompt input cannot be blank.')
+                vim.command('throw PromptBlankInput')
+                raise
         finally:
             vim.eval('inputrestore()')
         return ret.strip()
@@ -31,7 +33,7 @@ class Shim():
     def _squote_escape(self, s):
         return s.replace("'", "''")
 
-    # public
+    # public functions
 
     def __init__(self):
         self.opts = dict(
@@ -56,8 +58,8 @@ class Shim():
         try:
             article_name = vim.current.buffer.vars['article_name'].decode()
         except KeyError:
-            vim.eval('throw noRemoteWiki')
-            return # not sure if we ever get here?
+            vim.command('throw NoRemoteWiki')
+            raise
 
         client = Client(**self.opts)
         text = "\n".join(vim.current.buffer[:])
