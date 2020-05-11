@@ -1,1 +1,2 @@
-command! -nargs=1 WWedit call wikity_wack#edit(<f-args>)
+command! -nargs=1 WWOpen call wikity_wack#Open(<f-args>)
+command! WWPublish call wikity_wack#Publish()

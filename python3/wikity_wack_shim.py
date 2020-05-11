@@ -17,12 +17,12 @@ class Shim():
            opt = opt.decode()
        return opt
 
-    def _prompt(self, prompt_msg, is_password=False):
+    def _prompt(self, prompt_msg, is_password=False, err_on_blank=True, default=''):
         try:
             vim.eval('inputsave()')
             cmd = 'inputsecret' if is_password else 'input'
-            ret = vim.eval(f"{cmd}('{self._squote_escape(prompt_msg)}', '')").strip()
-            if not len(ret):
+            ret = vim.eval(f"{cmd}('{self._squote_escape(prompt_msg)}', '{default}')").strip()
+            if err_on_blank and not len(ret):
                 raise Exception('Prompt input cannot be blank.')
         finally:
             vim.eval('inputrestore()')
@@ -41,9 +41,20 @@ class Shim():
             path=self._get_opt('path', ask=False),
         )
 
-    def edit(self, article_name):
-        client = Client(**self.opts)
+    def article_open(self):
+        # arguments
+        article_name = vim.eval('a:article_name')
 
-        vim.current.buffer[:] = client.fetch_page(article_name).split("\n")
+        client = Client(**self.opts)
+        article = client.fetch_page(article_name)
+        vim.current.buffer[:] = article.text().split("\n")
         vim.command('set ft=mediawiki')
-        vim.command(f"let b:article_name = '{self._squote_escape(article_name)}'")
+        vim.current.buffer.vars['article_name'] = self._squote_escape(article_name).encode()
+
+    def article_publish(self):
+        client = Client(**self.opts)
+        article_name = vim.current.buffer.vars['article_name'].decode()
+        text = "\n".join(vim.current.buffer[:])
+        summary = self._prompt('Summary? : ', err_on_blank=False)
+        minor_change = self._prompt('Minor change? [y/N] : ', err_on_blank=False, default='n').lower() == 'y'
+        client.publish_page(article_name, text, summary, minor=minor_change)
