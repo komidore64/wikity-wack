@@ -14,18 +14,33 @@ Make MediaWiki edits in VIM!
 
 ## Usage
 
-### **:WWOpen [article-name]**
+### **:WikityWackopen [article-name]**
 
 Open the given article into the current buffer for editing
 
 ```vim
-:WWOpen EXVSMBON/Gundam
+:WikityWackopen EXVSMBON/Gundam
 ```
 
-### **:WWPublish**
+### **:WikityWackpublish**
 
-Publish the contents of the current buffer to the same article name you opened.
+Publish the contents of the current buffer to the same wiki page name you
+opened.
 
+Errors when this is run in a buffer that has not been previously attached
+to a remote wiki page with `:WikityWackopen`.
+
+### **:WikityWackdiff**
+
+Opens a vimdiff split of the current buffer with the version of what is
+currently on the remote wiki page. The buffer containing the remote wiki
+page contents is unmodifiable to avoid any accidental changes.
+
+When you're done, close the `<article_name> - REMOTE` buffer and run
+`:diffoff` in your editing buffer to turn off vim's diff settings.
+
+Errors when this is run in a buffer that has not been previously attached
+to a remote wiki page with `:WikityWackopen`.
 
 ## Installation
 
@@ -47,13 +62,17 @@ let g:wikity_wack = {
 You can put `password` in there if you want, but if you don't
 (recommended) **Wikity-Wack** will prompt for your password.
 
+```
+Mediawiki password? : ************************
+```
+
 ## Development TODO
 
 ### Main Functionality
 
 - ~~fetch an article by name and populate it into the current buffer~~
 - ~~publish the current buffer contents to a mediawiki page~~
-- diff the current buffer contents with a mediawiki page
+- ~~diff the current buffer contents with a mediawiki page~~
 - open the current buffer contents in a preview window
 - Vim documentation / help
 

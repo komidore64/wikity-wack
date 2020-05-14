@@ -43,15 +43,20 @@ class Shim():
             raise
         return article_name
 
-    def _setup_buffer(self):
+    def _setup_buffer(self, **kwargs):
+        set_opts = 'filetype=mediawiki nomodified'
+
+        if 'append_set' in kwargs:
+            set_opts += ' ' + kwargs['append_set']
+
         vim.command("""
             let old_undolevels = &undolevels
             set undolevels=-1
             execute "normal a \<BS>\<Esc>"
             let &undolevels = old_undolevels
             unlet old_undolevels
-            set nomodified filetype=mediawiki
         """)
+        vim.command(f"set {set_opts}")
 
     # public functions
 
@@ -65,8 +70,8 @@ class Shim():
 
     def article_open(self):
         article_name = vim.eval('a:article_name')
-
         client = Client(**self.opts)
+
         article = client.fetch_page(article_name)
         vim.current.buffer[:] = article.text().split("\n")
         vim.current.buffer.vars['article_name'] = self._squote_escape(article_name).encode()
@@ -77,13 +82,29 @@ class Shim():
 
     def article_publish(self):
         article_name = self._get_current_article_name()
-
         client = Client(**self.opts)
+
         text = "\n".join(vim.current.buffer[:])
         summary = self._prompt('Summary? : ', err_on_blank=False)
         minor_change = self._prompt('Minor change? [y/N] : ', err_on_blank=False, default='n').lower() == 'y'
         client.publish_page(article_name, text, summary, minor=minor_change)
 
         vim.command(f"redraw | echo 'Successfully published [ {article_name} ]'")
-
         vim.command('set nomodified')
+
+    def article_diff(self):
+        article_name = self._get_current_article_name()
+        remote_article_title = self._filename_escape(article_name + ' - REMOTE')
+        client = Client(**self.opts)
+
+        # editing buffer
+        vim.command('diffthis')
+
+        # remote buffer
+        vim.command(f"rightbelow vsplit {remote_article_title}")
+        vim.command('set modifiable')
+        vim.command('setlocal buftype=nofile bufhidden=delete nobuflisted')
+        vim.current.buffer[:] = client.fetch_page(article_name).text().split("\n")
+        self._setup_buffer(append_set='nomodifiable')
+        vim.command('diffthis')
+        vim.command('wincmd t')
