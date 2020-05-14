@@ -22,7 +22,6 @@ class Shim():
             vim.eval('inputsave()')
             cmd = 'inputsecret' if is_password else 'input'
             ret = vim.eval(f"{cmd}('{self._squote_escape(prompt_msg)}', '{default}')").strip()
-            vim.eval('inputrestore()')
             if err_on_blank and not len(ret):
                 vim.command('throw PromptBlankInput')
                 raise
@@ -36,13 +35,31 @@ class Shim():
     def _filename_escape(self, s):
         return vim.eval(f"fnameescape('{self._squote_escape(s)}')")
 
+    def _get_current_article_name(self):
+        try:
+            article_name = vim.current.buffer.vars['article_name'].decode()
+        except KeyError:
+            vim.command('throw NoRemoteWiki')
+            raise
+        return article_name
+
+    def _setup_buffer(self):
+        vim.command("""
+            let old_undolevels = &undolevels
+            set undolevels=-1
+            execute "normal a \<BS>\<Esc>"
+            let &undolevels = old_undolevels
+            unlet old_undolevels
+            set nomodified filetype=mediawiki
+        """)
+
     # public functions
 
     def __init__(self):
         self.opts = dict(
-            host=self._get_opt('host', "Mediawiki hostname? : "),
-            username=self._get_opt('username', "Mediawiki username? : "),
-            password=self._get_opt('password', "Mediawiki password? : "),
+            host=self._get_opt('host', 'Mediawiki hostname? : '),
+            username=self._get_opt('username', 'Mediawiki username? : '),
+            password=self._get_opt('password', 'Mediawiki password? : '),
             path=self._get_opt('path', ask=False),
         )
 
@@ -54,22 +71,12 @@ class Shim():
         vim.current.buffer[:] = article.text().split("\n")
         vim.current.buffer.vars['article_name'] = self._squote_escape(article_name).encode()
 
-        vim.command(f"redraw | echo \"Opening [ {article_name} ]\"")
+        vim.command(f"redraw | echo 'Opening [ {article_name} ]'")
+        self._setup_buffer()
 
-        # buffer setup
-        vim.command('let old_undolevels = &undolevels')
-        vim.command('set undolevels=-1')
-        vim.command('execute "normal a \<BS>\<Esc>"')
-        vim.command('let &undolevels = old_undolevels')
-        vim.command('unlet old_undolevels')
-        vim.command('set nomodified filetype=mediawiki')
 
     def article_publish(self):
-        try:
-            article_name = vim.current.buffer.vars['article_name'].decode()
-        except KeyError:
-            vim.command('throw NoRemoteWiki')
-            raise
+        article_name = self._get_current_article_name()
 
         client = Client(**self.opts)
         text = "\n".join(vim.current.buffer[:])
@@ -77,6 +84,6 @@ class Shim():
         minor_change = self._prompt('Minor change? [y/N] : ', err_on_blank=False, default='n').lower() == 'y'
         client.publish_page(article_name, text, summary, minor=minor_change)
 
-        vim.command(f"redraw | echo \"Successfully published [ {article_name} ]\"")
+        vim.command(f"redraw | echo 'Successfully published [ {article_name} ]'")
 
-        vim.command("set nomodified")
+        vim.command('set nomodified')
