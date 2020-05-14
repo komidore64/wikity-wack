@@ -14,37 +14,38 @@ Make MediaWiki edits in VIM!
 
 ## Usage
 
-### **:WikityWackopen [article-name]**
+### `:WikityWackopen <article-name>`
 
-Open the given article into the current buffer for editing
+Open the named wiki page in the current buffer for editing.
+
+example:
 
 ```vim
 :WikityWackopen EXVSMBON/Gundam
 ```
 
-### **:WikityWackpublish**
+### `:WikityWackpublish`
 
-Publish the contents of the current buffer to the same wiki page name you
-opened.
+Publish the contents of the current buffer to the wiki page you opened.
 
 Errors when this is run in a buffer that has not been previously attached
 to a remote wiki page with `:WikityWackopen`.
 
-### **:WikityWackdiff**
+### `:WikityWackdiff`
 
 Opens a vimdiff split of the current buffer with the version of what is
-currently on the remote wiki page. The buffer containing the remote wiki
-page contents is unmodifiable to avoid any accidental changes.
+currently on the remote wiki page.
+
+Errors when this is run in a buffer that has not been previously attached
+to a remote wiki page with `:WikityWackopen`.
 
 When you're done, close the `<article_name> - REMOTE` buffer and run
 `:diffoff` in your editing buffer to turn off vim's diff settings.
 
-Errors when this is run in a buffer that has not been previously attached
-to a remote wiki page with `:WikityWackopen`.
-
 ## Installation
 
-**Wikity-Wack** is Vundle-compatible so just add the following to your plugin list:
+**Wikity-Wack** is Vundle-compatible so just add the following to your
+plugin list:
 
 ```vim
 Plugin 'komidore64/wikity-wack'
@@ -59,8 +60,9 @@ let g:wikity_wack = {
     \ 'username': 'komidore64', }
 ```
 
-You can put `password` in there if you want, but if you don't
-(recommended) **Wikity-Wack** will prompt for your password.
+You can put `password` in there if you want. If you don't put your
+password in your `~/.vimrc` (recommended) **Wikity-Wack** will prompt for
+it and save it for the rest of the vim session:
 
 ```
 Mediawiki password? : ************************
