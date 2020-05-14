@@ -33,6 +33,9 @@ class Shim():
     def _squote_escape(self, s):
         return s.replace("'", "''")
 
+    def _filename_escape(self, s):
+        return vim.eval(f"fnameescape('{self._squote_escape(s)}')")
+
     # public functions
 
     def __init__(self):
