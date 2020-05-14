@@ -44,7 +44,6 @@ class Shim():
         )
 
     def article_open(self):
-        # arguments
         article_name = vim.eval('a:article_name')
 
         client = Client(**self.opts)
@@ -53,6 +52,14 @@ class Shim():
         vim.current.buffer.vars['article_name'] = self._squote_escape(article_name).encode()
 
         vim.command(f"redraw | echo \"Opening [ {article_name} ]\"")
+
+        # buffer setup
+        vim.command('let old_undolevels = &undolevels')
+        vim.command('set undolevels=-1')
+        vim.command('execute "normal a \<BS>\<Esc>"')
+        vim.command('let &undolevels = old_undolevels')
+        vim.command('unlet old_undolevels')
+        vim.command('set nomodified filetype=mediawiki')
 
     def article_publish(self):
         try:
@@ -68,3 +75,5 @@ class Shim():
         client.publish_page(article_name, text, summary, minor=minor_change)
 
         vim.command(f"redraw | echo \"Successfully published [ {article_name} ]\"")
+
+        vim.command("set nomodified")
