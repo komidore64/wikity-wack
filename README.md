@@ -80,6 +80,7 @@ Mediawiki password? : ************************
 
 - store configurations for multiple mediawiki sites
 - anonymous editing from sites that allow it
+- tab-completion for articles to edit
 
 ## Friends
 
