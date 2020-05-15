@@ -44,7 +44,7 @@ When you're done, close the `<article_name> - REMOTE` buffer and run
 
 ## Installation
 
-**Wikity-Wack** is [Vundle-compatible](https://github.com/VundleVim/Vundle.vim) so just add the following to your
+**WikityWack** is [Vundle-compatible](https://github.com/VundleVim/Vundle.vim) so just add the following to your
 plugin list:
 
 ```vim
@@ -61,7 +61,7 @@ let g:wikitywack = {
 ```
 
 You can put `password` in there if you want. If you don't put your
-password in your `~/.vimrc` (recommended) **Wikity-Wack** will prompt for
+password in your `~/.vimrc` (recommended) **WikityWack** will prompt for
 it and save it for the rest of the vim session:
 
 ```
