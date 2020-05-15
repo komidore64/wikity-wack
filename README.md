@@ -1,10 +1,10 @@
-# Wikity-Wack
+# WikityWack
 
-![GitHub](https://img.shields.io/github/license/komidore64/wikity-wack)
-![GitHub repo size](https://img.shields.io/github/repo-size/komidore64/wikity-wack)
+![GitHub](https://img.shields.io/github/license/komidore64/wikitywack)
+![GitHub repo size](https://img.shields.io/github/repo-size/komidore64/wikitywack)
 ![Vundle Compatible](https://img.shields.io/badge/Vundle.vim-compatible-yellow)
 
-Make MediaWiki edits in VIM!
+Make MediaWiki edits in Vim!
 
 ## Requirements
 
@@ -54,7 +54,7 @@ Plugin 'komidore64/wikity-wack'
 ## Configuration
 
 ```vim
-let g:wikity_wack = {
+let g:wikitywack = {
     \ 'host': 'dustloop.com',
     \ 'path': '/wiki/',
     \ 'username': 'komidore64', }

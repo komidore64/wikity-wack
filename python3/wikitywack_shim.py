@@ -1,5 +1,5 @@
 import vim
-from wikity_wack.client import Client
+from wikitywack.client import Client
 
 class Shim():
     """
@@ -7,11 +7,11 @@ class Shim():
     """
 
     def _get_opt(self, opt_key, prompt_text=None, ask=True):
-       opt = vim.vars['wikity_wack'].get(opt_key, None)
+       opt = vim.vars['wikitywack'].get(opt_key, None)
 
        if not opt and ask:
            opt = self._prompt(prompt_text or f"{opt_key}? : ", opt_key == 'password')
-           vim.vars['wikity_wack'][opt_key] = opt.encode()
+           vim.vars['wikitywack'][opt_key] = opt.encode()
 
        if type(opt) is bytes:
            opt = opt.decode()
