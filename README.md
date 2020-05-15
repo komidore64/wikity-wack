@@ -48,7 +48,7 @@ When you're done, close the `<article_name> - REMOTE` buffer and run
 plugin list:
 
 ```vim
-Plugin 'komidore64/wikity-wack'
+Plugin 'komidore64/wikitywack'
 ```
 
 ## Configuration
