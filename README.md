@@ -44,7 +44,7 @@ When you're done, close the `<article_name> - REMOTE` buffer and run
 
 ## Installation
 
-**Wikity-Wack** is Vundle-compatible so just add the following to your
+**Wikity-Wack** is [Vundle-compatible](https://github.com/VundleVim/Vundle.vim) so just add the following to your
 plugin list:
 
 ```vim
