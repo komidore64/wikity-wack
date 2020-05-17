@@ -16,12 +16,16 @@ Make MediaWiki edits in Vim!
 
 ### `:WikityWackopen <article-name>`
 
-Open the named wiki page in the current buffer for editing.
+Open the named wiki page in the current buffer for editing. Tab-completion
+for page names is supported for this command.
 
 example:
 
 ```vim
 :WikityWackopen EXVSMBON/Gundam
+
+" Escape any spaces in page names.
+:WikityWackopen EXVSMBON/Zaku\ III\ Custom
 ```
 
 ### `:WikityWackpublish`
@@ -82,7 +86,7 @@ Mediawiki password? : ************************
 
 - store configurations for multiple mediawiki sites
 - anonymous editing from sites that allow it
-- tab-completion for articles to edit
+- ~~tab-completion for articles to edit~~
 
 ## Friends
 
