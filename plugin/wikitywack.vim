@@ -1,3 +1,3 @@
-command! -nargs=1 WikityWackopen call wikitywack#Open(<f-args>)
+command! -nargs=1 -complete=custom,wikitywack#CompletePageName WikityWackopen call wikitywack#Open(<f-args>)
 command! WikityWackpublish call wikitywack#Publish()
 command! WikityWackdiff call wikitywack#Diff()

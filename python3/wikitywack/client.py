@@ -28,3 +28,6 @@ class Client():
 
         article = self.fetch_page(article_name)
         article.save(**args)
+
+    def match_page_names(self, prefix_text):
+        return [page.name for page in self.connection.allpages(prefix=prefix_text)]

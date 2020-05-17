@@ -51,3 +51,13 @@ function! wikitywack#Diff()
         call wikitywack#ErrorMessage(s:NoRemoteWiki)
     endtry
 endfunction
+
+function! wikitywack#CompletePageName(arglead, cmdline, cursorpos)
+    try
+        call wikitywack#Init()
+        python3 Shim().complete_page_name()
+        return l:completion_list
+    catch /PromptBlankInput/
+        call wikitywack#ErrorMessage(s:PromptBlankInput)
+    endtry
+endfunction

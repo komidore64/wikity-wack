@@ -17,6 +17,16 @@ class Shim():
            opt = opt.decode()
        return opt
 
+    def _get_argument(self, arg_str):
+        escapes = [
+            ('\ ', ' ')
+        ]
+        arg = vim.eval(arg_str)
+
+        for s, r in escapes:
+            arg = arg.replace(s, r)
+        return arg
+
     def _prompt(self, prompt_msg, is_password=False, err_on_blank=True, default=''):
         try:
             vim.eval('inputsave()')
@@ -69,7 +79,7 @@ class Shim():
         )
 
     def article_open(self):
-        article_name = vim.eval('a:article_name')
+        article_name = self._get_argument('a:article_name')
         client = Client(**self.opts)
 
         article = client.fetch_page(article_name)
@@ -108,3 +118,10 @@ class Shim():
         self._setup_buffer(append_set='nomodifiable')
         vim.command('diffthis')
         vim.command('wincmd t')
+
+    def complete_page_name(self):
+        client = Client(**self.opts)
+        prefix = self._get_argument('a:arglead')
+
+        completion_list = "\n".join([self._filename_escape(page_name) for page_name in client.match_page_names(prefix)])
+        vim.command(f"let l:completion_list = '{completion_list}'")
