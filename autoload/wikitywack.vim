@@ -3,6 +3,7 @@ let s:initialized = 0
 let s:RequiresPython3 = 'Wikity-Wack requires Vim to be compiled with Python3 support.'
 let s:NoRemoteWiki = 'This buffer is not attached to a remote wiki page.'
 let s:PromptBlankInput = 'Prompt input cannot be blank.'
+let s:NoChangesToPublish = 'No changes to publish.'
 
 function! wikitywack#ErrorMessage(msg)
     echohl ErrorMsg
@@ -29,6 +30,8 @@ function! wikitywack#Open(article_name)
         python3 Shim().article_open()
     catch /PromptBlankInput/
         call wikitywack#ErrorMessage(s:PromptBlankInput)
+    catch /KeyboardInterrupt/
+        finish
     endtry
 endfunction
 
@@ -40,6 +43,10 @@ function! wikitywack#Publish()
         call wikitywack#ErrorMessage(s:NoRemoteWiki)
     catch /PromptBlankInput/
         call wikitywack#ErrorMessage(s:PromptBlankInput)
+    catch /NoChangesToPublish/
+        call wikitywack#ErrorMessage(s:NoChangesToPublish)
+    catch /KeyboardInterrupt/
+        finish
     endtry
 endfunction
 

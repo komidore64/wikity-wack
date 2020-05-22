@@ -35,6 +35,9 @@ class Shim():
             if err_on_blank and not len(ret):
                 vim.command('throw PromptBlankInput')
                 raise
+        except KeyboardInterrupt:
+            vim.command('throw KeyboardInterrupt')
+            raise
         finally:
             vim.eval('inputrestore()')
         return ret.strip()
@@ -54,7 +57,7 @@ class Shim():
         return article_name
 
     def _setup_buffer(self, **kwargs):
-        set_opts = 'filetype=mediawiki nomodified'
+        set_opts = 'filetype=mediawiki nomodified buftype=nowrite'
 
         if 'append_set' in kwargs:
             set_opts += ' ' + kwargs['append_set']
@@ -85,6 +88,7 @@ class Shim():
         article = client.fetch_page(article_name)
         vim.current.buffer[:] = article.text().split("\n")
         vim.current.buffer.vars['article_name'] = self._squote_escape(article_name).encode()
+        vim.command(f"file '{self._squote_escape(article_name)}'")
 
         vim.command(f"redraw | echo 'Opening [ {article_name} ]'")
         self._setup_buffer()
@@ -95,6 +99,10 @@ class Shim():
         client = Client(**self.opts)
 
         text = "\n".join(vim.current.buffer[:])
+        remote_text = client.fetch_page(article_name).text()
+        if text == remote_text:
+            vim.command('throw NoChangesToPublish')
+            raise
         summary = self._prompt('Summary? : ', err_on_blank=False)
         minor_change = self._prompt('Minor change? [y/N] : ', err_on_blank=False, default='n').lower() == 'y'
         client.publish_page(article_name, text, summary, minor=minor_change)
