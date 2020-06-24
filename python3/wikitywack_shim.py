@@ -1,21 +1,19 @@
+import re
+import unicodedata
 import vim
 from wikitywack.client import Client
 
 class Shim():
-    """
-    Shim is an adapter class for interfacing Wikity-Wack's python with Vim.
-    """
-
     def _get_opt(self, opt_key, prompt_text=None, ask=True):
-       opt = vim.vars['wikitywack'].get(opt_key, None)
+        opt = vim.vars['wikitywack'].get(opt_key, None)
 
-       if not opt and ask:
-           opt = self._prompt(prompt_text or f"{opt_key}? : ", opt_key == 'password')
-           vim.vars['wikitywack'][opt_key] = opt.encode()
+        if not opt and ask:
+            opt = self._prompt(prompt_text or f"{opt_key}? : ", opt_key == 'password')
+            vim.vars['wikitywack'][opt_key] = opt.encode()
 
-       if type(opt) is bytes:
-           opt = opt.decode()
-       return opt
+        if type(opt) is bytes:
+            opt = opt.decode()
+        return opt
 
     def _get_argument(self, arg_str):
         escapes = [
@@ -31,7 +29,7 @@ class Shim():
         try:
             vim.eval('inputsave()')
             cmd = 'inputsecret' if is_password else 'input'
-            ret = vim.eval(f"{cmd}('{self._squote_escape(prompt_msg)}', '{default}')").strip()
+            ret = vim.eval(f"{cmd}('{self._vim_squote_escape(prompt_msg)}', '{default}')").strip()
             if err_on_blank and not len(ret):
                 vim.command('throw PromptBlankInput')
                 raise
@@ -42,11 +40,22 @@ class Shim():
             vim.eval('inputrestore()')
         return ret.strip()
 
-    def _squote_escape(self, s):
+    def _vim_squote_escape(self, s):
         return s.replace("'", "''")
 
-    def _filename_escape(self, s):
-        return vim.eval(f"fnameescape('{self._squote_escape(s)}')")
+    def _vim_filename_escape(self, s):
+        return vim.eval(f"fnameescape('{self._vim_squote_escape(s)}')")
+
+    def _slugify(self, s):
+        """
+        Thank you Django: https://docs.djangoproject.com/en/3.0/_modules/django/utils/text/#slugify
+        """
+        s = str(s)
+        s = unicodedata.normalize('NFKD', s).encode('ascii', 'ignore').decode('ascii')
+        s = s.replace('/', '-')
+        s = re.sub(r'[^\w\s-]', '', s).strip().lower()
+        s = re.sub(r'[-\s]+', '-', s)
+        return s
 
     def _get_current_article_name(self):
         try:
@@ -57,7 +66,7 @@ class Shim():
         return article_name
 
     def _setup_buffer(self, **kwargs):
-        set_opts = 'filetype=mediawiki nomodified buftype=nowrite'
+        set_opts = 'filetype=mediawiki nomodified'
 
         if 'append_set' in kwargs:
             set_opts += ' ' + kwargs['append_set']
@@ -87,8 +96,8 @@ class Shim():
 
         article = client.fetch_page(article_name)
         vim.current.buffer[:] = article.text().split("\n")
-        vim.current.buffer.vars['article_name'] = self._squote_escape(article_name).encode()
-        vim.command(f"file '{self._squote_escape(article_name)}'")
+        vim.current.buffer.vars['article_name'] = self._vim_squote_escape(article_name).encode()
+        vim.command(f"file '{self._slugify(article_name)}.wiki'")
 
         vim.command(f"redraw | echo 'Opening [ {article_name} ]'")
         self._setup_buffer()
@@ -101,6 +110,7 @@ class Shim():
         text = "\n".join(vim.current.buffer[:])
         remote_text = client.fetch_page(article_name).text()
         if text == remote_text:
+            vim.command('set nomodified')
             vim.command('throw NoChangesToPublish')
             raise
         summary = self._prompt('Summary? : ', err_on_blank=False)
@@ -112,7 +122,7 @@ class Shim():
 
     def article_diff(self):
         article_name = self._get_current_article_name()
-        remote_article_title = self._filename_escape(article_name + ' - REMOTE')
+        remote_article_title = self._vim_filename_escape(article_name + ' - REMOTE')
         client = Client(**self.opts)
 
         # editing buffer
@@ -131,5 +141,7 @@ class Shim():
         client = Client(**self.opts)
         prefix = self._get_argument('a:arglead')
 
-        completion_list = "\n".join([self._filename_escape(page_name) for page_name in client.match_page_names(prefix)])
+        completion_list = "\n".join(
+            [self._vim_filename_escape(page_name) for page_name in client.match_page_names(prefix)]
+        )
         vim.command(f"let l:completion_list = '{completion_list}'")
