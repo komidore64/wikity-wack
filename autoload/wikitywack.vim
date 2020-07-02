@@ -59,10 +59,10 @@ function! wikitywack#Diff()
     endtry
 endfunction
 
-function! wikitywack#CompletePageName(arglead, cmdline, cursorpos)
+function! wikitywack#CompleteOpen(arglead, cmdline, cursorpos)
     try
         call wikitywack#Init()
-        python3 Shim().complete_page_name()
+        python3 Shim().complete_open()
         return l:completion_list
     catch /PromptBlankInput/
         call wikitywack#ErrorMessage(s:PromptBlankInput)

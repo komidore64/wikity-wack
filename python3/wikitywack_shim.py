@@ -59,7 +59,7 @@ class Shim():
         vim.command('diffthis')
         vim.command('wincmd t')
 
-    def complete_page_name(self):
+    def complete_open(self):
         client = Client(**self.opts)
         prefix = utils.get_argument('a:arglead')
 
