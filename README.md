@@ -1,10 +1,22 @@
 # WikityWack
 
 ![GitHub](https://img.shields.io/github/license/komidore64/wikitywack)
-![GitHub repo size](https://img.shields.io/github/repo-size/komidore64/wikitywack)
 ![Vundle Compatible](https://img.shields.io/badge/Vundle.vim-compatible-yellow)
 
 Make MediaWiki edits in Vim!
+
+# NO LONGER UNDER DEVELOPMENT
+
+I quickly realized that a vim plugin was not the best solution for editing
+mediawiki pages with vim. I quickly started questioning how i'd search for
+pages or search for content within pages, which are not tasks for a text
+editor, but rather tasks for a shell to then give filenames to a text editor.
+
+I have since personally moved on to using
+[Git-Mediawiki](https://github.com/Git-Mediawiki/Git-Mediawiki) which is a
+plugin to git which lets you treat a mediawiki as a git remote. Once I've
+"cloned" a mediawiki and you have local files, I can `grep`, `sed`, `awk`, and
+whatever else to my heart's desire!
 
 ## Requirements
 
