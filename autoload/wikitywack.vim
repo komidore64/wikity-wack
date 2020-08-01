@@ -35,7 +35,7 @@ function! wikitywack#Open(article_name)
     endtry
 endfunction
 
-function! wikitywack#Publish()
+function! wikitywack#Publish(input_str = "")
     try
         call wikitywack#Init()
         python3 Shim().article_publish()

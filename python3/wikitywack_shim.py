@@ -1,3 +1,5 @@
+import argparse
+import shlex
 import vim
 
 from wikitywack.client import Client
@@ -26,19 +28,38 @@ class Shim():
 
 
     def article_publish(self):
-        article_name = self._get_current_article_name()
+        article_name = utils.get_current_article_name()
         client = Client(**self.opts)
+        input_str = utils.get_argument('a:input_str')
 
+        parser = argparse.ArgumentParser()
+        parser.add_argument('-s', '--summary', dest='summary')
+        parser.add_argument('-n', '--no-summary', dest='summary', action='store_const', const='')
+        parser.add_argument('-m', '--minor', action='store_true', dest='minor_change', default=argparse.SUPPRESS)
+        parser.add_argument('-M', '--major', action='store_false', dest='minor_change', default=argparse.SUPPRESS)
+        publish_args = parser.parse_args(shlex.split(input_str))
+
+        # have we made any actual changes to the page?
         text = "\n".join(vim.current.buffer[:])
         remote_text = client.fetch_page(article_name).text()
         if text == remote_text:
             vim.command('set nomodified')
             vim.command('throw NoChangesToPublish')
             raise
-        summary = utils.prompt('Summary? : ', err_on_blank=False)
-        minor_change = utils.prompt('Minor change? [y/N] : ', err_on_blank=False, default='n').lower() == 'y'
-        client.publish_page(article_name, text, summary, minor=minor_change)
 
+        # do we need to prompt for the summary?
+        try:
+            summary = publish_args.summary
+        except AttributeError:
+            summary = utils.prompt('Summary? : ', err_on_blank=False)
+
+        # do we need to prompt for the minor change boolean?
+        try:
+            minor_change = publish_args.minor_change
+        except AttributeError:
+            minor_change = utils.prompt('Minor change? [y/N] : ', err_on_blank=False, default='n').lower() == 'y'
+
+        client.publish_page(article_name, text, summary, minor=minor_change)
         vim.command(f"redraw | echo 'Successfully published [ {article_name} ]'")
         vim.command('set nomodified')
 
